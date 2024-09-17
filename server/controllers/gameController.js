@@ -1,42 +1,60 @@
-const gameList = async (req, res) => {
-  res.send("gameList : NOT IMPLEMENTED");
-};
+const { createId } = require("../db/queries");
+const dbQueries = require("../db/queries");
+const asyncHandler = require("express-async-handler");
 
-const gameDetail = async (req, res) => {
-  res.send("gameDetail : NOT IMPLEMENTED");
-};
+const TABLE_NAME = "game";
 
-const createGameGet = async (req, res) => {
-  res.send("createGameGet : NOT IMPLEMENTED");
-};
+const gameList = asyncHandler(async (req, res) => {
+  const allGames = await dbQueries.findAll(TABLE_NAME);
+  res.send({ data: allGames.rows, length: allGames.rowCount, code: 200 });
+});
 
-const createGamePost = async (req, res) => {
-  res.send("createGamePost : NOT IMPLEMENTED");
-};
+const gameDetail = asyncHandler(async (req, res) => {
+  const game = await dbQueries.findOne(TABLE_NAME, "id", req.params.id);
 
-const updateGameGet = async (req, res) => {
-  res.send("updateGameGet : NOT IMPLEMENTED");
-};
+  if (game.rows.length !== 0)
+    res.send({ code: 200, data: game.rows[0], msg: "Success" });
 
-const updateGamePost = async (req, res) => {
-  res.send("updateGamePost : NOT IMPLEMENTED");
-};
+  res.send({ code: 404, msg: "Not Found" });
+});
 
-const deleteGameGet = async (req, res) => {
-  res.send("deleteGameGet : NOT IMPLEMENTED");
-};
+const createGame = asyncHandler(async (req, res) => {
+  req.body.id = createId();
+  const newGame = await dbQueries.insertRecord(TABLE_NAME, req.body);
+  res.send({ code: 200, data: newGame, message: "Game Added Successfully" });
+});
 
-const deleteGamePost = async (req, res) => {
-  res.send("deleteGamePost : NOT IMPLEMENTED");
-};
+const updateGame = asyncHandler(async (req, res) => {
+  const updatedRecord = await dbQueries.updateRecord(
+    TABLE_NAME,
+    req.body,
+    "id",
+    req.params.id
+  );
+  res.send({
+    status: 200,
+    data: updatedRecord,
+    message: "Updated Successfully",
+  });
+});
+
+const deleteGame = asyncHandler(async (req, res) => {
+  const deletedGame = await dbQueries.deleteRecord(
+    TABLE_NAME,
+    "id",
+    req.params.id
+  );
+  res.send({
+    code: 200,
+    data: deletedGame.rows[0],
+    message: "Deleted Successfully",
+  });
+});
 
 module.exports = {
   gameList,
   gameDetail,
-  createGameGet,
-  createGamePost,
-  updateGameGet,
-  updateGamePost,
-  deleteGameGet,
-  deleteGamePost,
+  createGame,
+  updateGame,
+  deleteGame,
 };

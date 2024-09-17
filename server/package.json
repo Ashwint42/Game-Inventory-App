@@ -4,13 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "populateDB": "node ./db/populate.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.20.3",
     "express": "^4.19.2",
-    "nodemon": "^3.1.4"
+    "express-async-handler": "^1.2.0",
+    "nodemon": "^3.1.4",
+    "pg": "^8.12.0",
+    "uuid": "^10.0.0"
   }
 }
