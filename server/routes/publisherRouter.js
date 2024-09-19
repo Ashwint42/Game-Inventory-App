@@ -5,23 +5,14 @@ const publisherController = require("../controllers/publisherController");
 //GET details of all publishers
 router.get("/", publisherController.publisherList);
 
-//GET request to create publisher
-router.get("/create", publisherController.createPublisherGet);
-
 //POST request to create publisher
-router.post("/create", publisherController.createPublisherPost);
-
-//GET request to update publisher
-router.get("/update/:id", publisherController.updatePublisherGet);
+router.post("/create", publisherController.createPublisher);
 
 //POST request to update publisher
-router.post("/update/:id", publisherController.updatePublisherPost);
-
-//GET request to update publisher
-router.get("/delete/:id", publisherController.deletePublisherGet);
+router.post("/update/:id", publisherController.updatePublisher);
 
 //POST request to update publisher
-router.post("/delete/:id", publisherController.deletePublisherPost);
+router.post("/delete/:id", publisherController.deletePublisher);
 
 //Get detail of one publisher
 router.get("/:id", publisherController.publisherDetail);

@@ -1,4 +1,3 @@
-const { createId } = require("../db/queries");
 const dbQueries = require("../db/queries");
 const asyncHandler = require("express-async-handler");
 
@@ -6,26 +5,24 @@ const TABLE_NAME = "game";
 
 const gameList = asyncHandler(async (req, res) => {
   const allGames = await dbQueries.findAll(TABLE_NAME);
-  res.send({ data: allGames.rows, length: allGames.rowCount, code: 200 });
+  res.send({ games: allGames, status: 200 });
 });
 
 const gameDetail = asyncHandler(async (req, res) => {
   const game = await dbQueries.findOne(TABLE_NAME, "id", req.params.id);
 
-  if (game.rows.length !== 0)
-    res.send({ code: 200, data: game.rows[0], msg: "Success" });
-
-  res.send({ code: 404, msg: "Not Found" });
+  if (game) res.send({ status: 200, game, msg: "Success" });
+  else res.send({ status: 404, msg: "Not Found" });
 });
 
 const createGame = asyncHandler(async (req, res) => {
-  req.body.id = createId();
+  req.body.id = dbQueries.createId();
   const newGame = await dbQueries.insertRecord(TABLE_NAME, req.body);
-  res.send({ code: 200, data: newGame, message: "Game Added Successfully" });
+  res.send({ status: 200, newGame, message: "Game Added Successfully" });
 });
 
 const updateGame = asyncHandler(async (req, res) => {
-  const updatedRecord = await dbQueries.updateRecord(
+  const updatedGame = await dbQueries.updateRecord(
     TABLE_NAME,
     req.body,
     "id",
@@ -33,7 +30,7 @@ const updateGame = asyncHandler(async (req, res) => {
   );
   res.send({
     status: 200,
-    data: updatedRecord,
+    updatedGame,
     message: "Updated Successfully",
   });
 });
@@ -45,8 +42,8 @@ const deleteGame = asyncHandler(async (req, res) => {
     req.params.id
   );
   res.send({
-    code: 200,
-    data: deletedGame.rows[0],
+    status: 200,
+    deletedGame,
     message: "Deleted Successfully",
   });
 });

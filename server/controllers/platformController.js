@@ -1,42 +1,61 @@
-const platformList = async (req, res) => {
-  res.send("platformList : NOT IMPLEMENTED");
-};
+const dbQueries = require("../db/queries");
+const asyncHandler = require("express-async-handler");
 
-const platformDetail = async (req, res) => {
-  res.send("platformDetail : NOT IMPLEMENTED");
-};
+const TABLE_NAME = "platform";
 
-const createPlatformGet = async (req, res) => {
-  res.send("createPlatformGet : NOT IMPLEMENTED");
-};
+const platformList = asyncHandler(async (req, res) => {
+  const allPlatforms = await dbQueries.findAll(TABLE_NAME);
+  res.send({ code: 200, platforms: allPlatforms });
+});
 
-const createPlatformPost = async (req, res) => {
-  res.send("createPlatformPost : NOT IMPLEMENTED");
-};
+const platformDetail = asyncHandler(async (req, res) => {
+  const platform = await dbQueries.findOne(TABLE_NAME, "id", req.params.id);
+  res.send({ status: 200, platform });
+});
 
-const updatePlatformGet = async (req, res) => {
-  res.send("updatePlatformGet : NOT IMPLEMENTED");
-};
+const createPlatform = asyncHandler(async (req, res) => {
+  req.body.id = dbQueries.createId();
+  const createdPlatform = await dbQueries.insertRecord(TABLE_NAME, req.body);
+  res.send({ status: 200, createdPlatform });
+});
 
-const updatePlatformPost = async (req, res) => {
-  res.send("updatePlatformPost : NOT IMPLEMENTED");
-};
+const updatePlatform = asyncHandler(async (req, res) => {
+  const updatedPlatform = await dbQueries.updateRecord(
+    TABLE_NAME,
+    req.body,
+    "id",
+    req.params.id
+  );
+  res.send({
+    status: 200,
+    updatedPlatform,
+    message: "Updated Successfully",
+  });
+});
 
-const deletePlatformGet = async (req, res) => {
-  res.send("deletePlatformGet : NOT IMPLEMENTED");
-};
+const deletePlatform = asyncHandler(async (req, res) => {
+  const relatedGames = await dbQueries.find("game", "platform", req.params.id);
 
-const deletePlatformPost = async (req, res) => {
-  res.send("deletePlatformPost : NOT IMPLEMENTED");
-};
+  const deletedPlatform = await dbQueries.deleteRecord(
+    TABLE_NAME,
+    "id",
+    req.params.id
+  );
+
+  if (deletedPlatform) {
+    res.send({
+      status: 200,
+      deletedPlatform,
+      relatedGames,
+      message: "Deleted Successfully",
+    });
+  } else throw new Error("Error Deleting Platform");
+});
 
 module.exports = {
   platformList,
   platformDetail,
-  createPlatformGet,
-  createPlatformPost,
-  updatePlatformGet,
-  updatePlatformPost,
-  deletePlatformGet,
-  deletePlatformPost,
+  createPlatform,
+  updatePlatform,
+  deletePlatform,
 };

@@ -4,7 +4,7 @@ const app = express();
 const bodyParser = require("body-parser");
 
 const gameRoutes = require("./routes/gameRouter");
-const categoryRoutes = require("./routes/categoryRouter");
+const genreRoutes = require("./routes/genreRouter");
 const developerRoutes = require("./routes/developerRouter");
 const developerTypeRoutes = require("./routes/developerTypeRouter");
 const platformRoutes = require("./routes/platformRouter");
@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/games", gameRoutes);
 app.use("/developer", developerRoutes);
 app.use("/developerType", developerTypeRoutes);
-app.use("/category", categoryRoutes);
+app.use("/genre", genreRoutes);
 app.use("/platform", platformRoutes);
 app.use("/publisher", publisherRoutes);
 

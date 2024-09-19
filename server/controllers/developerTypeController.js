@@ -1,42 +1,81 @@
-const developerTypeList = async (req, res) => {
-  res.send("developerTypeList : NOT IMPLEMENTED");
-};
+const dbQueries = require("../db/queries");
+const asyncHandler = require("express-async-handler");
 
-const developerTypeDetail = async (req, res) => {
-  res.send("developerTypeDetail : NOT IMPLEMENTED");
-};
+const TABLE_NAME = "developer_type";
 
-const createDeveloperTypeGet = async (req, res) => {
-  res.send("createDeveloperTypeGet : NOT IMPLEMENTED");
-};
+const developerTypeList = asyncHandler(async (req, res) => {
+  const allDeveloperTypes = await dbQueries.findAll(TABLE_NAME);
+  res.send({ code: 200, developerTypes: allDeveloperTypes });
+});
 
-const createDeveloperTypePost = async (req, res) => {
-  res.send("createDeveloperTypePost : NOT IMPLEMENTED");
-};
+const developerTypeDetail = asyncHandler(async (req, res) => {
+  const developerType = await dbQueries.findOne(
+    TABLE_NAME,
+    "id",
+    req.params.id
+  );
+  res.send({ status: 200, developerType });
+});
 
-const updateDeveloperTypeGet = async (req, res) => {
-  res.send("updateDeveloperTypeGet : NOT IMPLEMENTED");
-};
+const createDeveloperType = asyncHandler(async (req, res) => {
+  req.body.id = dbQueries.createId();
+  const createdDeveloperType = await dbQueries.insertRecord(
+    TABLE_NAME,
+    req.body
+  );
+  res.send({ status: 200, createdDeveloperType });
+});
 
-const updateDeveloperTypePost = async (req, res) => {
-  res.send("updateDeveloperTypePost : NOT IMPLEMENTED");
-};
+const updateDeveloperType = asyncHandler(async (req, res) => {
+  const updatedDeveloperType = await dbQueries.updateRecord(
+    TABLE_NAME,
+    req.body,
+    "id",
+    req.params.id
+  );
+  res.send({
+    status: 200,
+    updatedDeveloperType,
+    message: "Updated Successfully",
+  });
+});
 
-const deleteDeveloperTypeGet = async (req, res) => {
-  res.send("deleteDeveloperTypeGet : NOT IMPLEMENTED");
-};
+const deleteDeveloperType = asyncHandler(async (req, res) => {
+  const relatedDevelopers = await dbQueries.find(
+    "developer",
+    "developer_type",
+    req.params.id
+  );
 
-const deleteDeveloperTypePost = async (req, res) => {
-  res.send("deleteDeveloperTypePost : NOT IMPLEMENTED");
-};
+  const relatedGames = await Promise.all(
+    relatedDevelopers.map(async (developer) => {
+      return await dbQueries.find("game", "developer", developer.id);
+    })
+  );
+
+  const deletedDeveloperType = await dbQueries.deleteRecord(
+    TABLE_NAME,
+    "id",
+    req.params.id
+  );
+
+  console.log(relatedGames);
+
+  if (deletedDeveloperType) {
+    res.send({
+      status: 200,
+      deletedDeveloperType,
+      relatedDevelopers,
+      relatedGames,
+      message: "Deleted Successfully",
+    });
+  } else throw new Error("Error Deleting DeveloperType");
+});
 
 module.exports = {
   developerTypeList,
   developerTypeDetail,
-  createDeveloperTypeGet,
-  createDeveloperTypePost,
-  updateDeveloperTypeGet,
-  updateDeveloperTypePost,
-  deleteDeveloperTypeGet,
-  deleteDeveloperTypePost,
+  createDeveloperType,
+  updateDeveloperType,
+  deleteDeveloperType,
 };

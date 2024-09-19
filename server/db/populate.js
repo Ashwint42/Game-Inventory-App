@@ -1,4 +1,4 @@
-const { createId } = require("./utils");
+const { createId } = require("./queries");
 const { Client } = require("pg");
 
 async function executeQuery() {
@@ -48,7 +48,7 @@ async function executeQuery() {
 
     CREATE TABLE platform (
       id UUID PRIMARY KEY,
-      platform_type VARCHAR(255) NOT NULL
+      title VARCHAR(255) NOT NULL
     );
 
     CREATE TABLE publisher (
@@ -65,20 +65,20 @@ async function executeQuery() {
     CREATE TABLE developer (
       id UUID PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
-      developer_type UUID REFERENCES developer_type(id),
+      developer_type UUID REFERENCES developer_type(id) ON DELETE CASCADE ON UPDATE CASCADE,
       description VARCHAR(255)
     );
 
     CREATE TABLE game (
       id UUID PRIMARY KEY,
       title VARCHAR(255) NOT NULL,
-      genre UUID REFERENCES genre(id),
-      platform UUID REFERENCES platform(id),
+      genre UUID REFERENCES genre(id) ON DELETE CASCADE ON UPDATE CASCADE,
+      platform UUID REFERENCES platform(id) ON DELETE CASCADE ON UPDATE CASCADE,
       release_year DATE NOT NULL,
       price DECIMAL(10, 2) NOT NULL,
       quantity INT NOT NULL,
-      developer UUID REFERENCES developer(id),
-      publisher UUID REFERENCES publisher(id),
+      developer UUID REFERENCES developer(id) ON DELETE CASCADE ON UPDATE CASCADE,
+      publisher UUID REFERENCES publisher(id) ON DELETE CASCADE ON UPDATE CASCADE,
       rating DECIMAL(3, 1),
       description VARCHAR(255)
     );
@@ -89,7 +89,7 @@ async function executeQuery() {
     ('${genreRpgId}', 'RPG'),
     ('${genreSimulationId}', 'Simulation');
 
-    INSERT INTO platform (id, platform_type) VALUES
+    INSERT INTO platform (id, title) VALUES
     ('${platformPcId}', 'PC'),
     ('${platformPlayStationId}', 'PlayStation'),
     ('${platformXboxId}', 'Xbox'),

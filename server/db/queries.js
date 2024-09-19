@@ -8,7 +8,15 @@ const createId = () => {
 
 const findAll = async (table) => {
   const data = await pool.query(`SELECT * FROM ${table}`);
-  return data;
+  return data.rows;
+};
+
+const find = async (table, column, value) => {
+  const data = await pool.query(
+    `SElECT * FROM ${table} WHERE ${column} = $1 `,
+    [value]
+  );
+  return data.rows;
 };
 
 const findOne = async (table, column, value) => {
@@ -16,7 +24,7 @@ const findOne = async (table, column, value) => {
     `SElECT * FROM ${table} WHERE ${column} = $1 `,
     [value]
   );
-  return data;
+  return data.rows[0];
 };
 
 const insertRecord = async (table, data) => {
@@ -58,12 +66,13 @@ const deleteRecord = async (table, column, value) => {
     [value]
   );
 
-  return deletedRecord;
+  return deletedRecord.rows[0];
 };
 
 module.exports = {
   createId,
   findAll,
+  find,
   findOne,
   insertRecord,
   updateRecord,
